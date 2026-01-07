@@ -1,12 +1,19 @@
 import axios from 'axios';
 
-const baseURL = 'http://ddp_api.test/api';
+/**
+ * LOGIKA JEMBATAN OTOMATIS:
+ * Mengambil link dari Vercel Settings (VITE_API_URL).
+ * Jika di laptop, otomatis pakai localhost:8000 (Docker).
+ */
+const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
 const API = axios.create({
   baseURL,
   withCredentials: true,
   headers: {
     'Accept': 'application/json',
+    /* --- KUNCI SAKTI: Menembus layar biru Ngrok --- */
+    'ngrok-skip-browser-warning': '69420'
   }
 });
 
@@ -33,7 +40,6 @@ API.interceptors.response.use(
 );
 
 export const apiService = {
-  // --- AUTHENTICATION ---
   async login(email: string, password: string) {
     const response = await API.post('/login', { email, password });
     if (response.data.access_token) {
@@ -54,7 +60,6 @@ export const apiService = {
     }
   },
 
-  // --- USER MANAGEMENT ---
   async getUsers() {
     const response = await API.get('/users');
     return response.data;
@@ -65,7 +70,6 @@ export const apiService = {
     return response.data;
   },
 
-  // --- GENERIC CRUD (Handel Gambar & Teks) ---
   async getData(resource: string) {
     const response = await API.get(`/${resource}`);
     return response.data;
@@ -73,57 +77,40 @@ export const apiService = {
 
   async saveData(resource: string, data: any) {
     const formData = new FormData();
-
     Object.keys(data).forEach((key) => {
       const value = data[key];
       if (key === 'gambar' && Array.isArray(value)) {
-        value.forEach((file) => {
-          if (file instanceof File) formData.append('gambar[]', file);
-        });
+        value.forEach((file) => { if (file instanceof File) formData.append('gambar[]', file); });
       } else if (value !== null && value !== undefined) {
         formData.append(key, value);
       }
     });
 
     if (data.id) {
-      formData.append('_method', 'PUT');
-      const response = await API.post(`/${resource}/${data.id}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      return response.data;
+      formData.append('_method', 'PUT'); // Method Spoofing Laravel
+      return (await API.post(`/${resource}/${data.id}`, formData)).data;
     } else {
-      const response = await API.post(`/${resource}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      return response.data;
+      return (await API.post(`/${resource}`, formData)).data;
     }
   },
 
   async deleteData(resource: string, id: number) {
-    const response = await API.delete(`/${resource}/${id}`);
-    return response.data;
+    return (await API.delete(`/${resource}/${id}`)).data;
   },
 
-  // --- KHUSUS TOGGLE BERANDA ---
   async toggleMonografiFeatured(id: number) {
-    const response = await API.post(`/monografi/${id}/toggle-featured`);
-    return response.data;
+    return (await API.post(`/monografi/${id}/toggle-featured`)).data;
   },
 
   async toggleInfografisHome(id: number) {
-    const response = await API.post(`/infografis/${id}/toggle-home`);
-    return response.data;
+    return (await API.post(`/infografis/${id}/toggle-home`)).data;
   },
 
-  // --- STATISTICS ---
   async getStats() {
-    const response = await API.get('/stats/capaian');
-    return response.data;
-  }, // <--- SAYA SUDAH TAMBAHKAN KOMA DI SINI
+    return (await API.get('/stats/capaian')).data;
+  },
 
-  // --- KHUSUS TOGGLE TESTIMONI (LIMIT 3) ---
   async toggleTestimoniTampil(id: number) {
-    const response = await API.post(`/testimoni/${id}/toggle-tampil`);
-    return response.data;
+    return (await API.post(`/testimoni/${id}/toggle-tampil`)).data;
   }
 };
