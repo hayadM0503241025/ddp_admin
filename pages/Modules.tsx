@@ -18,7 +18,7 @@ import {
   Database, BarChart3, Map, Home, Activity, Zap, Layers, PieChart, TrendingUp,
   Image as ImageIcon, Book, FileText, Camera, BookOpen, Bookmark, Globe, 
   ShieldCheck, MonitorPlay, Mail, MessageSquare,
-  Users, User as UserIcon, Venus, Mars, Info, Calendar, GraduationCap
+  Users, User as UserIcon, Info, Calendar, GraduationCap
 } from 'lucide-react';
 
 // ==========================================
