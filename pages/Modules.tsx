@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { apiService } from '../services/api';
+
+// --- PERBAIKAN ALAMAT: types.ts ada di dalam folder services ---
 import { 
   User as UserType, 
   CapaianData, 
@@ -9,19 +11,13 @@ import {
   Testimoni as TestimoniType
 } from '../services/types'; 
 
+// --- IMPORT LUCIDE ICONS (Lengkap & Bersih) ---
 import { 
-  // Ikon Umum & Navigasi
   Trash2, Edit2, Plus, Search, Check, X, Filter, ChevronDown, 
   MoreHorizontal, ChevronRight, ChevronLeft, Layout, ExternalLink,
-  
-  // Ikon Database & Statistik
   Database, BarChart3, Map, Home, Activity, Zap, Layers, PieChart, TrendingUp,
-  
-  // Ikon Modul
   Image as ImageIcon, Book, FileText, Camera, BookOpen, Bookmark, Globe, 
   ShieldCheck, MonitorPlay, Mail, MessageSquare,
-  
-  // Ikon User & Gender
   Users, User as UserIcon, Venus, Mars, Info, Calendar, GraduationCap
 } from 'lucide-react';
 
