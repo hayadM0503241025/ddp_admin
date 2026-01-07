@@ -5,7 +5,8 @@ import axios from 'axios';
  * Mengambil link dari Vercel Settings (VITE_API_URL).
  * Jika di laptop, otomatis pakai localhost:8000 (Docker).
  */
-const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
+// @ts-ignore: Mengabaikan pengecekan tipe data untuk .env
+const baseURL = (import.meta as any).env.VITE_API_URL || 'http://localhost:8000/api';
 
 const API = axios.create({
   baseURL,
@@ -26,7 +27,7 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
-// Interceptor: Logout otomatis jika session habis (401)
+// Interceptor: Logout otomatis jika session habis
 API.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -87,7 +88,7 @@ export const apiService = {
     });
 
     if (data.id) {
-      formData.append('_method', 'PUT'); // Method Spoofing Laravel
+      formData.append('_method', 'PUT'); 
       return (await API.post(`/${resource}/${data.id}`, formData)).data;
     } else {
       return (await API.post(`/${resource}`, formData)).data;
