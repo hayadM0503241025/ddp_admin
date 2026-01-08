@@ -6,17 +6,19 @@ import axios from 'axios';
  * 2. Menggunakan localhost:8000 jika sedang pengerjaan di laptop (Docker).
  */
 // @ts-ignore
-const baseURL = (import.meta as any).env.VITE_API_URL || 'http://localhost:8000/api';
+const baseURL =
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.DEV ? 'http://localhost:8000/api' : '');
 
 const API = axios.create({
   baseURL,
   withCredentials: true,
   headers: {
-    'Accept': 'application/json',
-    /* --- KUNCI SAKTI: Bypass layar biru Ngrok agar Vercel bisa menarik data --- */
+    Accept: 'application/json',
     'ngrok-skip-browser-warning': '69420'
   }
 });
+
 
 // --- INTERCEPTOR: Tempelkan Token Login secara otomatis ---
 API.interceptors.request.use((config) => {
