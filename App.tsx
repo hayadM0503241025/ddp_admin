@@ -17,7 +17,7 @@ import {
   GaleriModule,    // Modul baru ditambahkan
   GenericPlaceholderModule 
 } from './pages/Modules';
-import { User, UserRole } from './services/types';
+import { User, UserRole } from './types';
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
