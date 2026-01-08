@@ -1,23 +1,20 @@
 import axios from 'axios';
 
-/**
- * SOP KONFIGURASI JEMBATAN:
- * 1. Mengambil link dari Vercel Environment (VITE_API_URL) jika sedang online.
- * 2. Menggunakan localhost:8000 jika sedang pengerjaan di laptop (Docker).
- */
-// @ts-ignore
-const baseURL =
-  import.meta.env.VITE_API_URL ||
-  (import.meta.env.DEV ? 'http://localhost:8000/api' : '');
+const baseURL = import.meta.env.VITE_API_URL;
+
+if (!baseURL) {
+  throw new Error('VITE_API_URL is not defined');
+}
 
 const API = axios.create({
   baseURL,
   withCredentials: true,
   headers: {
     Accept: 'application/json',
-    'ngrok-skip-browser-warning': '69420'
-  }
+    'ngrok-skip-browser-warning': '69420',
+  },
 });
+
 
 
 // --- INTERCEPTOR: Tempelkan Token Login secara otomatis ---
