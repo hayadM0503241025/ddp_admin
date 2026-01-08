@@ -1,16 +1,24 @@
 import axios from 'axios';
 
-const baseURL = 'http://ddp_api.test/api';
+/**
+ * SOP KONFIGURASI JEMBATAN:
+ * 1. Mengambil link dari Vercel Environment (VITE_API_URL) jika sedang online.
+ * 2. Menggunakan localhost:8000 jika sedang pengerjaan di laptop (Docker).
+ */
+// @ts-ignore
+const baseURL = (import.meta as any).env.VITE_API_URL || 'http://localhost:8000/api';
 
 const API = axios.create({
   baseURL,
   withCredentials: true,
   headers: {
     'Accept': 'application/json',
+    /* --- KUNCI SAKTI: Bypass layar biru Ngrok agar Vercel bisa menarik data --- */
+    'ngrok-skip-browser-warning': '69420'
   }
 });
 
-// Interceptor: Tempelkan Token secara otomatis
+// --- INTERCEPTOR: Tempelkan Token Login secara otomatis ---
 API.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
@@ -19,7 +27,7 @@ API.interceptors.request.use((config) => {
   return config;
 });
 
-// Interceptor: Logout otomatis jika session habis (401)
+// --- INTERCEPTOR: Logout otomatis jika session habis (401) ---
 API.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -33,7 +41,9 @@ API.interceptors.response.use(
 );
 
 export const apiService = {
-  // --- AUTHENTICATION ---
+  // ==========================================
+  // --- AUTHENTICATION (Pusat Akses) ---
+  // ==========================================
   async login(email: string, password: string) {
     const response = await API.post('/login', { email, password });
     if (response.data.access_token) {
@@ -43,8 +53,7 @@ export const apiService = {
   },
 
   async register(name: string, email: string, password: string) {
-    const response = await API.post('/register', { name, email, password });
-    return response.data;
+    return (await API.post('/register', { name, email, password })).data;
   },
 
   async logout() {
@@ -54,18 +63,9 @@ export const apiService = {
     }
   },
 
-  // --- USER MANAGEMENT ---
-  async getUsers() {
-    const response = await API.get('/users');
-    return response.data;
-  },
-
-  async toggleApproval(id: number) {
-    const response = await API.post(`/users/${id}/toggle-approve`);
-    return response.data;
-  },
-
-  // --- GENERIC CRUD (Handel Gambar & Teks) ---
+  // ==========================================
+  // --- GENERIC CRUD (Handel Semua Modul) ---
+  // ==========================================
   async getData(resource: string) {
     const response = await API.get(`/${resource}`);
     return response.data;
@@ -76,6 +76,7 @@ export const apiService = {
 
     Object.keys(data).forEach((key) => {
       const value = data[key];
+      // Jika data adalah array (seperti Multiple Upload Infografis)
       if (key === 'gambar' && Array.isArray(value)) {
         value.forEach((file) => {
           if (file instanceof File) formData.append('gambar[]', file);
@@ -86,6 +87,7 @@ export const apiService = {
     });
 
     if (data.id) {
+      // METHOD SPOOFING: Kirim POST tapi Laravel baca sebagai PUT (Wajib untuk Update File)
       formData.append('_method', 'PUT');
       const response = await API.post(`/${resource}/${data.id}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
@@ -104,26 +106,36 @@ export const apiService = {
     return response.data;
   },
 
-  // --- KHUSUS TOGGLE BERANDA ---
+  // ==========================================
+  // --- USER MANAGEMENT (Super Admin) ---
+  // ==========================================
+  async getUsers() {
+    return (await API.get('/users')).data;
+  },
+
+  async toggleApproval(id: number) {
+    return (await API.post(`/users/${id}/toggle-approve`)).data;
+  },
+
+  // ==========================================
+  // --- LOGIKA KHUSUS TOGGLE BERANDA ---
+  // ==========================================
   async toggleMonografiFeatured(id: number) {
-    const response = await API.post(`/monografi/${id}/toggle-featured`);
-    return response.data;
+    return (await API.post(`/monografi/${id}/toggle-featured`)).data;
   },
 
   async toggleInfografisHome(id: number) {
-    const response = await API.post(`/infografis/${id}/toggle-home`);
-    return response.data;
+    return (await API.post(`/infografis/${id}/toggle-home`)).data;
   },
 
-  // --- STATISTICS ---
-  async getStats() {
-    const response = await API.get('/stats/capaian');
-    return response.data;
-  }, // <--- SAYA SUDAH TAMBAHKAN KOMA DI SINI
-
-  // --- KHUSUS TOGGLE TESTIMONI (LIMIT 3) ---
   async toggleTestimoniTampil(id: number) {
-    const response = await API.post(`/testimoni/${id}/toggle-tampil`);
-    return response.data;
+    return (await API.post(`/testimoni/${id}/toggle-tampil`)).data;
+  },
+
+  // ==========================================
+  // --- STATISTICS & OTHERS ---
+  // ==========================================
+  async getStats() {
+    return (await API.get('/stats/capaian')).data;
   }
 };
