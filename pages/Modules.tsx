@@ -22,7 +22,7 @@ import {
   Image as ImageIcon, Book, FileText, Camera, BookOpen, Bookmark, Globe, 
   
   // Ikon User, Gender & Kontak
-  Users, User as UserIcon, Venus, Mars, MessageSquare, Info, Calendar, GraduationCap, Mail
+  Users, User as UserIcon, MessageSquare, Info, Calendar, GraduationCap, Mail
 } from 'lucide-react';
 
 // ==========================================
