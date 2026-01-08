@@ -4,7 +4,7 @@ import {
   LogOut, Menu, Search, Bell, Camera, Book, MessageSquare, 
   ChevronRight, LayoutGrid, Globe, ShieldCheck, Settings
 } from 'lucide-react';
-import { User, UserRole } from '../services/types';
+import { User, UserRole } from '../types';
 
 // --- Gaya CSS Khusus untuk Scrollbar & Animasi ---
 const customStyles = `

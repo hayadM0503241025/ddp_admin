@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { apiService } from '../services/api';
-import { User } from '../services/types';
+import { User } from '../types';
 import { 
   ArrowRight, 
   LayoutDashboard, 

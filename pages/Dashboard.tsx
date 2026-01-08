@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { apiService } from '../services/api';
-import { DashboardStats } from '../services/types';
+import { DashboardStats } from '../types';
 import { 
   Database, FileText, Users, Activity, Zap, 
   LayoutDashboard, Map, MessageSquare, Camera, 
